@@ -125,6 +125,7 @@ export default function NavBar({
                                     Messages
                                 </NavLink>
                                 <NavLink href="/chatboxes">Chatbox</NavLink>
+                                <NavLink href="/groups">Groups</NavLink>
                                 <NavLink href="/search">Search</NavLink>
                                 <NavLink
                                     href="/notifications"
