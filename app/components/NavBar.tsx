@@ -153,8 +153,8 @@ export default function NavBar({
                             >
                                 Home
                             </button>
-                            <NavLink href="/">Login</NavLink>
-                            <NavLink href="/">Create Account</NavLink>
+                            <NavLink href="/login">Login</NavLink>
+                            <NavLink href="/signup">Create Account</NavLink>
                         </div>
                     )}
                 </div>
