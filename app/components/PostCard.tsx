@@ -372,7 +372,7 @@ export default function PostCard({
                                         </>
                                     ) : (
                                         <Heart
-                                            size={21}
+                                            size={23}
                                             strokeWidth={2.25}
                                             aria-hidden="true"
                                         />
