@@ -1,10 +1,15 @@
 import { describe, expect, it, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, waitFor } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import PostCard from "./PostCard";
 import type { BulletinPostCard } from "@/lib/types";
 
-vi.mock("@/app/actions", () => ({
+const { reactToBulletinPostAction } = vi.hoisted(() => ({
     reactToBulletinPostAction: vi.fn(),
+}));
+
+vi.mock("@/app/actions", () => ({
+    reactToBulletinPostAction,
     reactToGroupPostAction: vi.fn(),
     reactToBulletinCommentAction: vi.fn(),
     createGroupCommentAction: vi.fn(),
@@ -72,7 +77,29 @@ describe("PostCard bulletin comments", () => {
 
         const commentLink = screen.getByRole("link", { name: "View comments" });
         expect(commentLink).toBeInTheDocument();
-        expect(commentLink).toHaveTextContent("Comment");
-        expect(commentLink.textContent).toBe("Comment");
+        expect(commentLink).not.toHaveTextContent("Comment");
+        expect(commentLink.querySelector("svg")).toBeInTheDocument();
+    });
+
+    it("shows the selected reaction emoji in the reaction control", async () => {
+        reactToBulletinPostAction.mockResolvedValue({
+            ok: true,
+            reactions: [{ type: "😂", count: 1 }],
+            myReaction: "😂",
+        });
+        const user = userEvent.setup();
+        render(<PostCard post={{ ...post, comments: [] }} />);
+
+        await user.click(screen.getByRole("button", { name: "React to this post" }));
+        await user.click(screen.getByTitle("😂"));
+
+        await waitFor(() => {
+            expect(
+                screen.getByRole("button", {
+                    name: "Change or remove reaction, 😂 1",
+                }),
+            ).toBeInTheDocument();
+        });
+        expect(screen.getByRole("button", { name: "Change or remove reaction, 😂 1" })).toHaveTextContent("😂");
     });
 });

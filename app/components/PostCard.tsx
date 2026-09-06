@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { Heart, MessageCircle } from "lucide-react";
 import {
     type BulletinCommentCard,
     type BulletinPostCard,
@@ -350,12 +351,32 @@ export default function PostCard({
                             <div className="relative inline-block">
                                 <button
                                     type="button"
-                                    className={`btn text-[11px] px-2 py-0.5 ${myReaction ? "" : "btn-ghost"}`}
+                                    className={`inline-flex min-h-9 min-w-9 items-center justify-center gap-1 border-0 bg-transparent p-1.5 text-[11px] cursor-pointer hover:bg-[#dbe9f7] ${myReaction ? "text-[#003399]" : "text-gray-500"}`}
                                     onClick={() => setOpen(!open)}
+                                    aria-label={
+                                        myReaction
+                                            ? `Change or remove reaction, ${myReaction} ${countOf(myReaction)}`
+                                            : "React to this post"
+                                    }
+                                    aria-haspopup="true"
+                                    title="React to this post"
                                 >
-                                    {myReaction
-                                        ? `${myReaction} ${countOf(myReaction)}`
-                                        : "React"}
+                                    {myReaction ? (
+                                        <>
+                                            <span
+                                                className="text-[18px] leading-none"
+                                                aria-hidden="true"
+                                            >
+                                                {myReaction}
+                                            </span>
+                                        </>
+                                    ) : (
+                                        <Heart
+                                            size={21}
+                                            strokeWidth={2.25}
+                                            aria-hidden="true"
+                                        />
+                                    )}
                                 </button>
                                 {open && (
                                     <ReactionPicker
@@ -366,7 +387,7 @@ export default function PostCard({
                                 )}
                             </div>
                             {reactions.length > 0 && (
-                                <span className="text-[11px] text-gray-500 mx-1 font-bold">
+                                <span className="text-[11px] text-gray-500 font-bold">
                                     {reactions
                                         .slice(0, 3)
                                         .map(
@@ -380,15 +401,19 @@ export default function PostCard({
                                 <>
                                     <Link
                                         href={`/bulletin/${post._id}#comments`}
-                                        className="btn btn-ghost text-[11px] pt-2 py-2 no-underline leading-5"
+                                        className="inline-flex min-h-9 min-w-9 items-center justify-center gap-1 p-1.5 text-[11px] text-gray-500 no-underline hover:bg-[#dbe9f7] hover:text-[#003399]"
                                         aria-label={`View comments${comments.length > 0 ? ` (${comments.length})` : ""}`}
                                         title="View comments"
                                     >
-                                        Comment
+                                        <MessageCircle
+                                            size={20}
+                                            strokeWidth={2.25}
+                                            aria-hidden="true"
+                                        />
                                     </Link>
                                     {comments.length > 0 && (
                                         <span
-                                            className="text-[11px] text-gray-500 mx-1 font-bold"
+                                            className="text-[11px] text-gray-500 font-bold"
                                             aria-label={`${comments.length} comments`}
                                         >
                                             {comments.length}
