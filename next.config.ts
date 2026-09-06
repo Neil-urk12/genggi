@@ -28,6 +28,9 @@ const nextConfig: NextConfig = {
     experimental: {
         serverActions: {
             bodySizeLimit: "4mb",
+            // The production site is served through a proxy that can report a
+            // different host to Next.js than the browser's public origin.
+            allowedOrigins: ["genggi.com", "www.genggi.com"],
         },
     },
 };

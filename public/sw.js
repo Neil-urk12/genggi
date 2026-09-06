@@ -27,6 +27,12 @@ self.addEventListener("fetch", (event) => {
     if (event.request.method !== "GET") return;
 
     event.respondWith(
-        fetch(event.request).catch(() => caches.match(event.request)),
+        fetch(event.request).catch(async () => {
+            const cachedResponse = await caches.match(event.request);
+            // A fetch handler must always resolve to a Response. Returning
+            // undefined here causes an unhandled TypeError when an uncached
+            // production request is offline or rejected by the server.
+            return cachedResponse ?? new Response("", { status: 503 });
+        }),
     );
 });
