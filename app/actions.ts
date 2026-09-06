@@ -30,6 +30,7 @@ import {
     toChatboxMessageCard,
 } from "@/lib/chatbox";
 import { getYouTubeVideoId } from "@/lib/utils";
+import { decodeMultipartTextField } from "@/lib/form-encoding";
 import {
     normalizeUsername,
     validateUsername,
@@ -577,12 +578,20 @@ export async function createLayoutAction(
     formData: FormData,
 ): Promise<ActionResult & { layout?: { id: string; screenshot: string | null } }> {
     const user = await requireUser();
-    const name = String(formData.get("name") || "").trim().slice(0, 80);
-    const description = String(formData.get("description") || "")
+    const name = decodeMultipartTextField(
+        String(formData.get("name") || ""),
+    )
+        .trim()
+        .slice(0, 80);
+    const description = decodeMultipartTextField(
+        String(formData.get("description") || ""),
+    )
         .trim()
         .slice(0, 500);
     const screenshotFile = formData.get("screenshot");
-    const css = String(formData.get("css") || "").trim().slice(0, 20000);
+    const css = decodeMultipartTextField(String(formData.get("css") || ""))
+        .trim()
+        .slice(0, 20000);
 
     if (!name) return { error: "Layout name is required." };
     if (!(screenshotFile instanceof File) || screenshotFile.size === 0)

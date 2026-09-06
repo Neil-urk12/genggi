@@ -8,6 +8,7 @@ import {
     deleteLayoutAction,
 } from "@/app/actions";
 import { optimizeCloudinaryUrl } from "@/lib/cloudinary-url";
+import { encodeMultipartTextField } from "@/lib/form-encoding";
 
 type Layout = {
     id: string;
@@ -76,15 +77,21 @@ export default function LayoutsGallery({
 
     function submit(formData: FormData) {
         setError("");
+        // Capture the raw values first: the fields are base64-encoded below so edge
+        // WAF scanners don't mistake layout CSS/markup for script injection and
+        // reject the upload with a 403, and the optimistic row needs the originals.
+        const name = String(formData.get("name") || "");
+        const description = String(formData.get("description") || "");
+        const css = String(formData.get("css") || "");
+        formData.set("name", encodeMultipartTextField(name));
+        formData.set("description", encodeMultipartTextField(description));
+        formData.set("css", encodeMultipartTextField(css));
         startTransition(async () => {
             const result = await createLayoutAction({}, formData);
             if (result.error) {
                 setError(result.error);
                 return;
             }
-            const name = String(formData.get("name"));
-            const description = String(formData.get("description") || "");
-            const css = String(formData.get("css") || "");
             setLayouts((current) => [
                 {
                     id: result.layout?.id ?? crypto.randomUUID(),
